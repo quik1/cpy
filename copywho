@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Check if the script is run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root or using sudo."
+  exit
+fi
+
+# Function to install packages on Arch Linux
+install_packages() {
+  read -p "Enter the list of packages to install (space-separated): " packages
+
+  # Update package databases and install specified packages
+  pacman -Syu $packages
+}
+
+# Function to move installed program to .config directory
+move_to_config() {
+  read -p "Enter the name of the program installed: " program_name
+
+  # Check if the program is installed
+  if command -v "$program_name" &> /dev/null; then
+    # Move the program to the .config directory
+    mv "$(command -v $program_name)" "/home/$(whoami)/.config/$program_name"
+    echo "Program moved to /home/$(whoami)/.config/$program_name"
+  else
+    echo "Error: $program_name is not installed."
+  fi
+}
+
+# Main script execution
+install_packages
+move_to_config
+
+echo "Installation and configuration completed successfully!"
